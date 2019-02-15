@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>数据图表</title>
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+<div class="panelBar" th:replace="head :: pagination"></div>
+<div class="container">
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">饼图统计</div>
+                    <div class="layui-card-body" style="height: 450px">
+                        <div id="main" style="width: 100%;height:100%;float: left"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">种类结构图</div>
+                    <div class="layui-card-body" style="height: 450px">
+                        <div id="main2" style="width: 100%;height:100%;float: left"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+    var myCharts = echarts.init(document.getElementById("main"));
+    var myCharts2 = echarts.init(document.getElementById("main2"));
+
+    // ==============================   饼状图  ======================
+    var data1;
+    $.ajax({
+        type: "post",
+        url: "/query/getTable",
+        async: false,//异步or同步
+        success: function (msg) {
+            data1 = msg.data;
+        }
+    });
+    var option = {
+        title: {
+            text: '产品种类统计',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{b} : {c} ({d}%)"
+        },
+        series: [
+            {
+                type: 'pie',
+                radius: '65%',
+                center: ['50%', '50%'],
+                selectedMode: 'single',
+                data: data1,
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+    myCharts.setOption(option);
+
+    //===================   树形图 ========
+    var data2 ;
+    $.ajax({
+        type: "post",
+        url: "/query/kindsTable",
+        async: false,//异步or同步
+        success: function (msg) {
+            data2 = msg.data;
+            myCharts2.setOption(option2 = {
+                tooltip: {
+                    trigger: 'item',
+                    triggerOn: 'mousemove'
+                },
+                legend: {
+                    top: '2%',
+                    left: '3%',
+                    orient: 'vertical',
+                    data: [{
+                        name: '结构树',
+                        icon: 'rectangle'
+                    }],
+                    borderColor: '#c23531'
+                },
+                series: [
+                    {
+                        type: 'tree',
+                        name: '结构树',
+                        data: data2,
+
+                        top: '5%',
+                        left: '7%',
+                        bottom: '2%',
+                        right: '7%',
+                        symbolSize: 10,
+                        label: {
+                            normal: {
+                                position: 'left',
+                                verticalAlign: 'middle',
+                                align: 'right'
+                            }
+                        },
+                        leaves: {
+                            label: {
+                                normal: {
+                                    position: 'right',
+                                    verticalAlign: 'middle',
+                                    align: 'left'
+                                }
+                            }
+                        },
+
+                        expandAndCollapse: true,
+                        animationDuration: 550,
+                        animationDurationUpdate: 750
+                    }
+                ]
+            });
+        }
+    });
+
+
+
+    // ==================================================== 菜单栏公用部分 ================================
+    //注销功能
+    function logout() {
+        layer.confirm('确定注销？', function (index) {
+            $.ajax({
+                type: "post",
+                url: "/login/logout",
+                contentType: "application/json",
+                async: false,//异步or同步
+                success: function (msg) {
+                    window.location.href = "/query/index";
+                }
+            });
+        });
+
+    }
+
+
+
+    //cookie操作工具类
+    var cookie = {
+        set: function (key, val, time) {//设置cookie方法
+            var date = new Date(); //获取当前时间
+            var expiresDays = time;  //将date设置为n天以后的时间
+            date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); //格式化为cookie识别的时间
+            document.cookie = key + "=" + val + ";expires=" + date.toGMTString() + ";path=/";  //设置cookie
+        },
+        get: function (key) {//获取cookie方法
+            /*获取cookie参数*/
+            var getCookie = document.cookie.replace(/[ ]/g, "");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+            var arrCookie = getCookie.split(";")  //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+            var tips;  //声明变量tips
+            for (var i = 0; i < arrCookie.length; i++) {   //使用for循环查找cookie中的tips变量
+                var arr = arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+                if (key == arr[0]) {  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                    tips = arr[1];   //将cookie的值赋给变量tips
+                    break;   //终止for循环遍历
+                }
+            }
+            return tips;
+        },
+        delete: function (key) { //删除cookie方法
+            var date = new Date(); //获取当前时间
+            date.setTime(date.getTime() - 10000); //将date设置为过去的时间
+            document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
+        }
+    }
+
+    layui.use('element', function () {
+        var element = layui.element;
+
+    });
+
+</script>
+</html>

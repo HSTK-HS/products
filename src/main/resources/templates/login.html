@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:margin-top="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录界面</title>
+    <link href="/static/css/default.css" rel="stylesheet" type="text/css"/>
+    <!--必要样式-->
+    <link href="/static/css/styles.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/demo.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/loaders.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+</head>
+<body>
+<div class='login'>
+    <div class='login_title'>
+        <span>德舜昌用户登录</span>
+    </div>
+    <div class='login_fields'>
+        <form id="yzform" name="yzform"   method="post" onsubmit="return check()">
+            <div class='login_fields__user'>
+                <div class='icon'>
+                    <img alt="" src='/static/images/user_icon_copy.png'>
+                </div>
+                <input name="username" placeholder='用户名' maxlength="16" type='text'/>
+                <div class='validation'>
+                    <img alt="" src='/static/images/tick.png'>
+                </div>
+            </div>
+            <div class='login_fields__password'>
+                <div class='icon'>
+                    <img alt="" src='/static/images/lock_icon_copy.png'>
+                </div>
+                <input name="password" placeholder='密码' maxlength="16" type='password' >
+                <div class='validation'>
+                    <img alt="" src='/static/images/tick.png'>
+                </div>
+            </div>
+            <div class='login_fields__password'>
+                <div class='icon'>
+                    <img alt="" src='/static/images/key.png'>
+                </div>
+                <input name="yzm" placeholder='验证码' maxlength="4" type='text' >
+                <div class='validation' style="opacity: 1; right: -5px;top: -3px;">
+                    <canvas class="J_codeimg" id="myCanvas" onclick="Code();">对不起，您的浏览器不支持canvas，请下载最新版浏览器!</canvas>
+                </div>
+            </div>
+            <div class='login_fields__submit'>
+                <input type='submit' value='登录'>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+<div class='authent'>
+    <div class="loader" style="height: 44px;width: 44px;margin-left: 28px;">
+        <div class="loader-inner ball-clip-rotate-multiple">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <p>认证中...</p>
+</div>
+<div class="OverWindows"></div>
+
+<link href="/static/layui/css/layui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src='/static/js/stopExecutionOnTimeout.js?t=1'></script>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/Particleground.js"></script>
+<script type="text/javascript" src="/static/js/Treatment.js"></script>
+<script type="text/javascript" src="/static/js/jquery.mockjax.js"></script>
+<script type="text/javascript">
+    var canGetCookie = 0;//是否支持存储Cookie 0 不支持 1 支持
+    //默认账号密码
+    var CodeVal = 0;
+    var yz;
+    Code();
+
+    function Code() {
+        if (canGetCookie === 1) {
+            createCode("AdminCode");
+            var AdminCode = getCookieValue("AdminCode");
+            showCheck(AdminCode);
+        } else {
+            showCheck(createCode(""));
+        }
+    }
+
+    function showCheck(a) {
+        CodeVal = a;
+        yz = CodeVal;
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, 1000, 1000);
+        ctx.font = "80px 'Hiragino Sans GB'";
+        ctx.fillStyle = "#E8DFE8";
+        ctx.fillText(a, 0, 100);
+    }
+
+    $(document).keypress(function (e) {
+        // 回车键事件
+        if (e.which == 13) {
+            $('input[type="button"]').click();
+        }
+    });
+    //粒子背景特效
+    $('body').particleground({
+        dotColor: '#E8DFE8',
+        lineColor: '#133b88'
+    });
+    $('input[name="pwd"]').focus(function () {
+        $(this).attr('type', 'password');
+    });
+    $('input[type="text"]').focus(function () {
+        $(this).prev().animate({'opacity': '1'}, 200);
+    });
+    $('input[type="text"],input[type="password"]').blur(function () {
+        $(this).prev().animate({'opacity': '.5'}, 200);
+    });
+    $('input[name="username"],input[name="password"]').keyup(function () {
+        var Len = $(this).val().length;
+        if (!$(this).val() === '' && Len >= 5) {
+            $(this).next().animate({
+                'opacity': '1',
+                'right': '30'
+            }, 200);
+        } else {
+            $(this).next().animate({
+                'opacity': '0',
+                'right': '20'
+            }, 200);
+        }
+    });
+
+
+    function check(){
+        // 通过form的name的属性获取表单
+        var form = document.getElementById('yzform');
+        var user_val = form.username.value;
+        var password_val = form.password.value;
+        var code_val = form.yzm.value;
+        if(user_val === ''){
+            alert("用户名不能为空!!");
+            return false;
+        }else if(password_val === ''){
+            alert("密码不能为空!!");
+            return false;
+        } else if(code_val=== '' ){
+            alert("验证码不能为空!!");
+            return false;
+        }else if(!(code_val.toLowerCase() === yz.toLowerCase())){
+            alert('验证码错误');
+            return false;
+        }else{
+            form.action = "/login/check";
+            form.method = "post";
+            // 提交表单
+            form.submit();
+            return true;
+        }
+    }
+
+</script>
+<script>
+    $(function () {  //, headers: { 'x-requested-with': 'XMLHttpRequest' }
+        $.ajaxSetup({crossDomain: true, xhrFields: {withCredentials: true}});
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>管理数据</title>
+    <script src="../static/js/jquery.min.js"></script>
+    <link href="../static/filter/Fliter.css" rel="stylesheet"/>
+    <script src="../static/filter/Filter.js"></script>
+</head>
+<style type="text/css">
+    .rightmenu {
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 2px;
+    }
+
+    .rightmenu li {
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    ul.layui-tab-title li:first-child i {
+        display: none;
+    }
+</style>
+<body>
+<div class="layui-layout-admin layui-layout">
+    <!--引入头部菜单栏 -->
+    <div class="panelBar" th:replace="head :: pagination"></div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree " lay-filter="treenav">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="clearTable()">新建选型</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">挤出机选型</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" class="site-url" data-title="放线" data-id="1001"
+                               data-url="/tab?key=放线机">放线</a>
+                        </dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="张力缓冲架" data-id="1002"
+                               data-url="/tab?key=张力缓冲架">张力架</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="预热器" data-id="1003"
+                               data-url="/tab?key=预热器">预热器</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="过粉机" data-id="1004"
+                               data-url="/tab?key=过粉机">过粉机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="过油机" data-id="1005"
+                               data-url="/tab?key=过油机">过油机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="整直台" data-id="1006"
+                               data-url="/tab?key=整直">整直台</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="拖包机" data-id="1007"
+                               data-url="/tab?key=拖包机">拖包机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="主机" data-id="1008"
+                               data-url="/tab?key=主机">主机</a>
+                        </dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="机头" data-id="1009"
+                               data-url="/tab?key=机头">机头</a>
+                        </dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="辅机(注条机)" data-id="1010"
+                               data-url="/tab?key=注条机">注条机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="料斗,烘干" data-id="1011"
+                               data-url="/tab?key=料斗">料斗</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="热端线径" data-id="1012"
+                               data-url="/tab?key=热端线径">热端线径</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="热端测径" data-id="1013"
+                               data-url="/tab?key=热端测径">热端测径</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="温水冷却" data-id="1014"
+                               data-url="/tab?key=温水冷却">温水冷却</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="吹干装置1" data-id="1015"
+                               data-url="/tab?key=吹干装置">吹干装置1</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="电箱" data-id="1016"
+                               data-url="/tab?key=电箱">电箱</a>
+                        </dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="印字机" data-id="1017"
+                               data-url="/tab?key=印字机">印字机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="回转箱" data-id="1018"
+                               data-url="/tab?key=回转">回转</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="冷却水槽" data-id="1019"
+                               data-url="/tab?key=冷却水槽">冷却水槽</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="引取机" data-id="1020"
+                               data-url="/tab?key=引取机">引取机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="吹干装置2" data-id="1021"
+                               data-url="/tab?key=吹干装置">吹干装置2</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="储线架" data-id="1022"
+                               data-url="/tab?key=储线架">储线架</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="火花机" data-id="1023"
+                               data-url="/tab?key=火花机">火花机</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="测径仪" data-id="1024"
+                               data-url="/tab?key=测径仪">测径仪</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="凹凸仪" data-id="1025"
+                               data-url="/tab?key=凹凸仪">凹凸仪</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="计米器" data-id="1026"
+                               data-url="/tab?key=计米器">计米器</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="收线" data-id="1027"
+                               data-url="/tab?key=收线机">收线</a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;">绞线机选型</a>
+                    <!--<dl class="layui-nav-child">
+                        <dd><a href="javascript:;" class="site-url" data-title="系统设置" data-id="7"
+                               data-url="http://www.baidu.com.cn">暂未开放</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="网站设置" data-id="8"
+                               data-url="http://www.baidu.com">网站设置</a></dd>
+                        <dd><a href="javascript:;" class="site-url" data-title="修改密码" data-id="9"
+                               data-url="http://www.baidu.com">修改密码</a></dd>
+                        <dd><a class="site-url" data-title="收线" data-id="1027" data-url="/tab?key=收线">收线</a>
+                        </dd>
+                    </dl>-->
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;">拉丝机选型</a>
+                   <!-- <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" class="site-url" data-title="系统设置" data-id="7"
+                               data-url="http://www.baidu.com.cn">系统设置</a></dd>
+                    </dl>-->
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;">MES选型</a>
+                    <!--<dl class="layui-nav-child">
+                        <dd><a href="javascript:;" class="site-url" data-title="系统设置" data-id="7"
+                               data-url="http://www.baidu.com.cn">系统设置</a></dd>
+                    </dl>-->
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+        <div class="layui-tab layui-tab-card" lay-filter="contentnav" lay-allowClose="true"
+             style="margin-top:0;">
+            <ul class="layui-tab-title">
+                <li class="layui-this">首页</li>
+            </ul>
+            <ul class="layui-bg-green rightmenu" style="display: none;position: absolute;">
+                <li data-type="closethis">关闭当前</li>
+                <li data-type="closeall">关闭所有</li>
+            </ul>
+            <div class="layui-tab-content" style="padding:0;overflow: auto">
+                <div class="layui-tab-item layui-show">
+                    <div id="select" class="layui-row layui-col-md12" style="margin-top: 10px">
+                        <!-- 内容主体区域 -->
+                        <div class="layui-col-md12 ">
+                            <div id="category"></div>
+                            <div id="categoryBig"></div>
+                            <div id="categorySmall"></div>
+                            <div class="layui-row" style="margin-top: 10px">
+                                <div class="layui-col-md2 layui-col-md-offset8">
+                                    <input id="demo_value" type="text" value="" title="" class="layui-input">
+                                </div>
+                                <div class="layui-col-md2" style="padding-left: 10px">
+                                    <button class="layui-btn " style="float: left" onclick="keyQuery()">关键字查询</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md12" id="table">
+                        <table class="layui-hide" id="test" lay-filter="test"></table>
+                        <div id="page" style="text-align: right;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script id="barDemo" type="text/html">
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="detail">下载</a>
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="yl">预览</a>
+</script>
+<script id="barDemo2" type="text/html">
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">添加</a>
+</script>
+<script>
+    // ----------------------------------------
+    var catData;
+    var a = null, b = null, c = null;
+    var categoryData = [];
+    var categoryBigData = [];
+    var categorySmallData = [];
+    $('#category').comboboxfilter({
+        url: '/query/c',
+        scope: 'FilterQuery3',
+        inputName: '大类',
+        data: categoryData,
+        unlimitText: '不限',
+        onChange: function (newValue) {
+            if (newValue === '') {
+                a = null;
+            } else {
+                a = newValue;
+            }
+
+            $.ajax({
+                url: "/query/product2",
+                data: {"category": a, "categoryBig": b, "categorySmall": c},
+                type: "POST",
+                dataType: "json",
+                success: function (msg) {
+                    reload(msg);
+                },
+                error: function (error) {
+                    layer.alert("查询失败！不存在该数据")
+                }
+            });
+        }
+    });
+
+    $('#categoryBig').comboboxfilter({
+        url: '/query/cb',
+        scope: 'FilterQuery3',
+        multiple: false,
+        unlimitText: '不限',
+        data: categoryBigData,
+        onChange: function (newValue) {
+            if (newValue === '') {
+                b = null;
+            } else {
+                b = newValue;
+            }
+            $.ajax({
+                url: "/query/product2",
+                data: {"category": a, "categoryBig": b, "categorySmall": c},
+                type: "POST",
+                dataType: "json",
+                success: function (msg) {
+                    reload(msg);
+                },
+                error: function (error) {
+                    layer.alert("查询失败！不存在该数据")
+                }
+            });
+        }
+    });
+
+    $('#categorySmall').comboboxfilter({
+        url: '/query/cs',
+        scope: 'FilterQuery3',
+        multiple: false,
+        unlimitText: '不限',
+        data: categorySmallData,
+        onChange: function (newValue) {
+            if (newValue === '') {
+                c = null;
+            } else {
+                c = newValue;
+            }
+            $.ajax({
+                url: "/query/product2",
+                data: {"category": a, "categoryBig": b, "categorySmall": c},
+                type: "POST",
+                dataType: "json",
+                success: function (msg) {
+                    reload(msg);
+                },
+                error: function (error) {
+                    layer.alert("查询失败！不存在该数据")
+                }
+            });
+        }
+    });
+
+    function keyQuery() {
+        //alert($('#demo_value').val());
+        $.ajax({
+            url: "/query/key",
+            data: {"some": $('#demo_value').val()},
+            type: "POST",
+            dataType: "json",
+            success: function (msg) {
+                reload(msg);
+            },
+            error: function (error) {
+                alert("查询失败！")
+            }
+        });
+    }
+
+    layui.use('element', function () {
+        var element = layui.element;
+        var active = {
+            tabAdd: function (url, id, name) {
+                element.tabAdd('contentnav', {
+                    title: name,
+                    content: '<iframe data-frameid="' + id + '" scrolling="auto" frameborder="0" src="' + url + '" style="width:100%;"></iframe>',
+                    id: id
+                });
+                rightMenu();
+                iframeWH();
+            },
+            tabChange: function (id) {
+                element.tabChange('contentnav', id);
+            },
+            tabDelete: function (id) {
+                element.tabDelete('contentnav', id);
+            },
+            tabDeleteAll: function (ids) {
+                $.each(ids, function (index, item) {
+                    element.tabDelete('contentnav', item);
+                });
+            }
+        };
+        $(".site-url").on('click', function () {
+            var nav = $(this);
+            var length = $("ul.layui-tab-title li").length;
+            if (length <= 0) {
+                active.tabAdd(nav.attr("data-url"), nav.attr("data-id"), nav.attr("data-title"));
+            } else {
+                var isData = false;
+                $.each($("ul.layui-tab-title li"), function () {
+                    if ($(this).attr("lay-id") == nav.attr("data-id")) {
+                        isData = true;
+                    }
+                });
+                if (isData == false) {
+                    active.tabAdd(nav.attr("data-url"), nav.attr("data-id"), nav.attr("data-title"));
+                }
+                active.tabChange(nav.attr("data-id"));
+            }
+        });
+
+        function rightMenu() {
+            //右击弹出
+            $(".layui-tab-title li").on('contextmenu', function (e) {
+                var menu = $(".rightmenu");
+                menu.find("li").attr('data-id', $(this).attr("lay-id"));
+                l = e.clientX - 150;
+                t = e.clientY - 40;
+                menu.css({left: l, top: t}).show();
+                return false;
+            });
+            //左键点击隐藏
+            $("body,.layui-tab-title li").click(function () {
+                $(".rightmenu").hide();
+            });
+        }
+
+        $(".rightmenu li").click(function () {
+            if ($(this).attr("data-type") === "closethis") {
+                active.tabDelete($(this).attr("data-id"));
+            } else if ($(this).attr("data-type") === "closeall") {
+                var tabtitle = $(".layui-tab-title li");
+                var ids = new Array();
+                tabtitle.each(function (i) {
+                    ids.push($(this).attr("lay-id"));
+                });
+                //如果关闭所有 ，即将所有的lay-id放进数组，执行tabDeleteAll
+                active.tabDeleteAll(ids);
+            }
+            $('.rightmenu').hide(); //最后再隐藏右键菜单
+        });
+
+        function iframeWH() {
+            var H = $(window).height() - 80;
+            $("iframe").css("height", H + "px");
+        }
+
+        $(window).resize(function () {
+            iframeWH();
+        });
+    });
+
+    var option = [
+        [
+            {field: 'category', title: '大类', align: 'center', width: 100, sort: true},
+            {field: 'categoryBig', title: '大类码', align: 'center', width: 100, sort: true},
+            {field: 'categorySmall', title: '细分码', align: 'center', width: 100, sort: true},
+            {field: 'productNumber', title: '产品编号', align: 'center', width: 100},
+            {field: 'direction', title: '方向', align: 'center', width: 60},
+            {field: 'productName', title: '产品名称', align: 'center', width: 150},
+            {field: 'standard', title: '有无图纸标准', align: 'center', width: 100},
+            {field: 'remarks', title: '说明', align: "center"},
+            {fixed: 'right', title: '详细文档', width: 140, align: 'center', toolbar: '#barDemo'},
+            {fixed: 'right', title: '报表选项', width: 100, align: 'center', toolbar: '#barDemo2'}
+        ]
+    ];
+
+    function reload(da) {
+        layui.use('table', function () {
+            var table = layui.table;
+            var tableIns = table.render({
+                elem: '#test',
+                data: da,
+                limits: [10, 20, 30, 40],
+                limit: 20,   //每页默认显示数量
+                cols: option,
+                async: false,
+                even: true,
+                page: {
+                    layout: ['prev', 'page', 'next', 'skip', 'count'] //自定义分页布局
+                    , curr: 1 //设定初始在第 5 页
+                    , groups: 2 //只显示 1 个连续页码
+                    , first: "首页" //显示首页
+                    , last: "尾页" //显示尾页
+                }
+                , done: function (res, curr, count) {
+                    // 表格加载接收后调用 给cookie中添加的信息 加上背景色
+                    colorByCookie(res);
+                }
+            });
+        })
+    }
+
+    layui.use('table', function () {
+        var table = layui.table;
+        var tableIns = table.render({
+            elem: '#test'
+            , url: "/query/page"
+            , title: '数据表'
+            , limit: 20
+            , cols: option
+            , async: false
+            //,skin: 'line' //表格风格
+            , even: true
+            , page: {
+                layout: ['prev', 'page', 'next', 'skip', 'count'] //自定义分页布局
+                , curr: 1 //设定初始在第 5 页
+                , groups: 2 //只显示 1 个连续页码
+                , first: "首页" //显示首页
+                , last: "尾页" //显示尾页
+            }
+            , done: function (res, curr, count) {
+                // 表格加载接收后调用 给cookie中添加的信息 加上背景色
+                colorByCookie(res);
+            }
+        });
+
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') {
+                download(data.url);
+            } else if (obj.event === 'yl') {
+                //在线预览 调用官方接口 资源需开放
+                layer.open({
+                    type: 2,
+                    area: ['75%', '90%'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: 'https://view.officeapps.live.com/op/view.aspx?src=http://top.chinadsc.cn/static/upload/' + data.url
+                })
+            } else if (obj.event === 'add') {
+                if (typeof(cookie.get("scar")) === "undefined") {
+                    cookie.set("scar", data.id, 24);
+                } else {
+                    var choose = cookie.get("scar").split(',');
+                    var flag = 0;
+                    for (var i = 0; i < choose.length; i++) {
+                        if (choose[i].toString() === data.id.toString()) {
+                            flag++;
+                        }
+                    }
+                    if (flag === 0 && cookie.get("scar") !== "") {
+                        cookie.set("scar", cookie.get("scar") + "," + data.id, 24);
+                        layer.msg("已添加到报表");
+                        reloadAfter();
+                    } else if (cookie.get("scar") === "") {
+                        cookie.set("scar", data.id, 24);
+                        layer.msg("已添加到报表");
+                        reloadAfter();
+                    } else
+                        layer.msg("请勿重复添加!");
+                }
+            }
+        });
+    });
+
+    //添加选项后 判断查询的方式 进行上色
+    function reloadAfter() {
+        if ($('#demo_value').val() === "") {
+            $.ajax({
+                url: "/query/product2",
+                data: {"category": a, "categoryBig": b, "categorySmall": c},
+                type: "POST",
+                dataType: "json",
+                success: function (msg) {
+                    reload(msg);
+                },
+                error: function (error) {
+                    layer.alert("查询失败！不存在该数据")
+                }
+            });
+        } else {
+            keyQuery();
+        }
+    }
+
+    // 根据cookie 中的值 进行加色
+    function colorByCookie(res) {
+        var choose = cookie.get("scar").split(',');
+        for (var i = 0; i < choose.length; i++) {
+            for (var j = 0; j < res.data.length; j++) {
+                if (choose[i].toString() === res.data[j].id.toString()) {
+                    Layui_SetDataTableRowColor('table', j, '#64fa8d');
+                }
+            }
+        }
+    }
+
+    //TabDivId:tab父div id;RowIndex:行序列号，从0开始；ColorString：颜色字符串，如'#123456'
+    function Layui_SetDataTableRowColor(TabDivId, RowIndex, ColorString) {
+        try {
+            var div = document.getElementById(TabDivId);
+            if (div != null) //找到对象了
+            {
+                var table_main = div.getElementsByClassName('layui-table-main');   //通过class获取table_main
+                if (table_main != null && table_main.length > 0) {
+                    var table = table_main[0].getElementsByClassName('layui-table');   //通过class获取table
+                    if (table != null && table.length > 0) {
+                        var trs = table[0].querySelectorAll("tr");
+                        if (trs != null && trs.length > 0) {
+                            trs[RowIndex].style = 'background-color: ' + ColorString + ';';
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.log(e.message);
+        }
+    }
+
+    function download(url) {
+        try {
+            var $eleForm = $("<form method='get'></form>");
+            $eleForm.attr("action", "/static/upload/" + url);
+            $(document.body).append($eleForm);
+            $eleForm.submit();
+        } catch (e) {
+            layer.alert("不存在该文档！");
+        }
+    }
+
+    // ==================================================== 菜单栏公用部分 ================================
+    //注销功能
+    function logout() {
+        layer.confirm('确定注销？', function (index) {
+            $.ajax({
+                type: "post",
+                url: "/login/logout",
+                contentType: "application/json",
+                async: false,//异步or同步
+                success: function (msg) {
+                    window.location.href = "/query/index";
+                }
+            });
+        });
+
+    }
+
+    //cookie操作工具类
+    var cookie = {
+        set: function (key, val, time) {//设置cookie方法
+            var date = new Date(); //获取当前时间
+            var expiresDays = time;  //将date设置为n天以后的时间
+            date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); //格式化为cookie识别的时间
+            document.cookie = key + "=" + val + ";expires=" + date.toGMTString() + ";path=/";  //设置cookie
+        },
+        get: function (key) {//获取cookie方法
+            /*获取cookie参数*/
+            var getCookie = document.cookie.replace(/[ ]/g, "");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+            var arrCookie = getCookie.split(";"); //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+            var tips;  //声明变量tips
+            for (var i = 0; i < arrCookie.length; i++) {   //使用for循环查找cookie中的tips变量
+                var arr = arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+                if (key == arr[0]) {  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                    tips = arr[1];   //将cookie的值赋给变量tips
+                    break;   //终止for循环遍历
+                }
+            }
+            return tips;
+        },
+        delete: function (key) { //删除cookie方法
+            var date = new Date(); //获取当前时间
+            date.setTime(date.getTime() - 10000); //将date设置为过去的时间
+            document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
+        }
+    };
+
+    function clearTable() {
+        layer.confirm('新建机型将会删除已选数据,确定删除?', {
+            btn: ['新建', '取消'] //按钮
+        }, function () {
+            cookie.set("scar", "");
+            layer.msg('选项已清空', {icon: 1});
+            setTimeout(function () {
+                window.location.href = "/query/index";
+            }, 888);
+
+        })
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:margin-top="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>添加数据</title>
+    <script src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <!--引入头部菜单栏(只有html部分)-->
+    <div class="panelBar" th:replace="head :: pagination"></div>
+
+    <div class="layui-col-md10 layui-col-md-offset1" style="margin-top: 15px">
+        <form action="" class="layui-form layui-form-pane">
+
+            <!-- 普通文本输入框 -->
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">大类</label>
+                        <div class="layui-input-block">
+                            <input id="category" type="text" name="category" placeholder="请输入大类"
+                                   autocomplete="off" required lay-verify="required"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">大类码</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="categoryBig" placeholder="请输入大类码"
+                                   autocomplete="off" required lay-verify="required"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">细分码</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="categorySmall" placeholder="请输入细分码"
+                                   autocomplete="off" required lay-verify="required"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">产品编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="productNumber" placeholder="请输入产品编号"
+                                   autocomplete="off" required lay-verify="required"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">方向</label>
+                        <div class="layui-input-block">
+                            <select name="direction" lay-verify="required">
+                                <option value="无">请选择一个方向</option>
+                                <option value="左">左</option>
+                                <option value="右">右</option>
+                                <option value="无">无</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">产品名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="productName" placeholder="请输入产品名称"
+                                   autocomplete="off" required lay-verify="required"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-form-item" pane>
+                        <label class="layui-form-label" style="width: auto">存在图纸标准</label>
+                        <div class="layui-input-block" style="width: auto">
+                            <input type="radio" name="standard" value="是" title="是">
+                            <input type="radio" name="standard" value="否" title="否" checked>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <input type="hidden" class="url" name="url">
+                    <button type="button" class="layui-btn" id="up">
+                        <i class="layui-icon">&#xe67c;</i>上传详细文档
+                    </button>
+                    <button type="button" class="layui-btn" id="upgo">开始上传</button>
+                </div>
+            </div>
+
+
+            <div class="layui-row layui-col-space20">
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">说明</label>
+                    <div class="layui-input-block">
+                        <textarea name="remarks" placeholder="请输入说明内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form;
+        var upload = layui.upload;
+        var url = "未添加";
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            data.field.url = url;
+            var da = JSON.stringify(data.field);
+
+            $.ajax({
+                type: "post",
+                url: "/query/insert",
+                contentType: "application/json;charset=utf-8",
+                data: da,
+                async: false,//异步or同步
+                success: function (msg) {
+                    layer.alert(jQuery.parseJSON(msg).msg);
+                    setTimeout(function () {
+                        window.open("/query/change", '_self');
+                    }, 1500);
+                }
+            });
+        });
+        var uploadInst = upload.render({
+            elem: '#up' //绑定元素
+            , url: '/file/upload' //上传接口
+            , method: 'post'  //可选项。HTTP类型，默认post
+            , auto: false
+            , bindAction: '#upgo'
+            , accept: 'file'
+            , done: function (msg) {
+                url = msg.msg;
+                layer.msg("文档已添加");
+            }, error: function () {
+                //请求异常回调
+                layer.msg("文档添加失败");
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

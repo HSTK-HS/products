@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>用户信息管理</title>
+    <script src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="panelBar" th:replace="head :: pagination"></div>
+
+    <div class="layui-container">
+        <div class="layui-col-md11 layui-col-md-offset1">
+            <table class="layui-hide" id="user" style="width: auto" lay-filter="user"></table>
+            <button class="layui-btn layui-btn-warm" onclick="add()">添加用户</button>
+        </div>
+
+    </div>
+</div>
+<script id="barDemo" type="text/html">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/javascript">
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    layui.use('table', function () {
+        var table = layui.table;
+
+        table.render({
+            elem: '#user'
+            , url: '/user/all'
+            , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            , cols: [
+                [
+                    {field: 'id', width: 80, title: 'ID', sort: true}
+                    , {field: 'name', width: 80, title: '用户名'}
+                    , {field: 'password', width: 80, title: '密码'}
+                    , {fixed: 'right', title: '操作', width: 140, align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+        });
+        table.on('tool(user)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                if(data.name === 'admin'){
+                    layer.msg('admin用户不可删除!!!', function(){
+
+                    });
+                }else {
+                layer.confirm('是否删除所选账户？', function (index) {
+                    $.ajax({
+                        type: "post",
+                        url: "/user/delete",
+                        data: {id: data.id},
+                        async: false,//异步or同步
+                        success: function (msg) {
+                            layer.msg(jQuery.parseJSON(msg).msg);
+                            table.reload('user');
+                        }
+                    });
+                });
+                }
+            }
+        })
+    });
+
+    function add() {
+        layer.prompt({title: '请输入用户名，并确认', formType: 3}, function (name, index) {
+            layer.close(index);
+            layer.prompt({title: '请输入密码，并确认', formType: 3}, function (password, index) {
+                $.ajax({
+                    type: "post",
+                    url: "/user/insert",
+                    data: {name:name,password:password},
+                    async: false,//异步or同步
+                    success: function (msg) {
+                        layer.msg("添加成功");
+                        layer.close(index);
+                        window.location.href = "/userInfo";
+                    }
+                });
+
+            });
+        })
+    }
+</script>
+</body>
+</html>

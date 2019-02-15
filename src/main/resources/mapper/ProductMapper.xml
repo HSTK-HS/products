@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.products.dao.ProductMapper" >
+  <resultMap id="BaseResultMap" type="com.example.products.pojo.Product" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="product_number" property="productNumber" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="category" property="category" jdbcType="VARCHAR" />
+    <result column="category_big" property="categoryBig" jdbcType="VARCHAR" />
+    <result column="category_small" property="categorySmall" jdbcType="VARCHAR" />
+    <result column="direction" property="direction" jdbcType="VARCHAR" />
+    <result column="standard" property="standard" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, product_number, product_name, category, category_big, category_small, direction, 
+    standard, remarks, url
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from products
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from products
+  </select>
+  <select id="selectByPage" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List" />
+    from products limit #{start},#{page}
+  </select>
+  <select id="selectByProduct" resultMap="BaseResultMap"  parameterType="com.example.products.pojo.Product">
+    select
+    <include refid="Base_Column_List" />
+    from products p
+    <where>
+      <if test="id!=null">
+        p.id=#{id}
+      </if>
+      <if test="productNumber!=null">
+        and  p.product_number=#{productNumber}
+      </if>
+      <if test="productName!=null">
+        and p.product_name=#{productName}
+      </if>
+      <if test="category!=null">
+        and p.category=#{category}
+      </if>
+      <if test="categoryBig!=null">
+        and p.category_big=#{categoryBig}
+      </if>
+      <if test="categorySmall!=null">
+        and p.category_small=#{categorySmall}
+      </if>
+      <if test="direction!=null">
+        and p.direction=#{direction}
+      </if>
+      <if test="standard!=null">
+        and p.standard=#{standard}
+      </if>
+      <if test="remarks!=null">
+        and p.remarks=#{remarks}
+      </if>
+      <if test="url!=null">
+        and p.url=#{url}
+      </if>
+    </where>
+  </select>
+
+  <select id="queryCategorySmallByCategory" resultType="java.lang.String" parameterType="java.lang.String">
+    select
+    distinct category_small
+    from products p
+    where p.category like CONCAT('%',#{category},'%')
+  </select>
+
+  <select id="selectByKey" resultMap="BaseResultMap"  parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from products p
+    where p.product_name like CONCAT('%',#{productName},'%') || p.category like CONCAT('%',#{category},'%')
+    || p.category_big like CONCAT('%',#{categoryBig},'%') || p.category_small like CONCAT('%',#{categorySmall},'%')
+    || p.product_number like CONCAT('%',#{productNumber},'%')
+  </select>
+
+  <delete id="deleteByProductId" parameterType="java.lang.Integer" >
+    delete from products
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.example.products.pojo.Product" useGeneratedKeys="true" keyProperty="id">
+    insert into products ( product_number, product_name,
+      category, category_big, category_small, 
+      direction, standard, remarks, 
+      url)
+    values ( #{productNumber,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR},
+      #{category,jdbcType=VARCHAR}, #{categoryBig,jdbcType=VARCHAR}, #{categorySmall,jdbcType=VARCHAR}, 
+      #{direction,jdbcType=VARCHAR}, #{standard,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.products.pojo.Product" >
+    insert into products
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="productNumber != null" >
+        product_number,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="category != null" >
+        category,
+      </if>
+      <if test="categoryBig != null" >
+        category_big,
+      </if>
+      <if test="categorySmall != null" >
+        category_small,
+      </if>
+      <if test="direction != null" >
+        direction,
+      </if>
+      <if test="standard != null" >
+        standard,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productNumber != null" >
+        #{productNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryBig != null" >
+        #{categoryBig,jdbcType=VARCHAR},
+      </if>
+      <if test="categorySmall != null" >
+        #{categorySmall,jdbcType=VARCHAR},
+      </if>
+      <if test="direction != null" >
+        #{direction,jdbcType=VARCHAR},
+      </if>
+      <if test="standard != null" >
+        #{standard,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.products.pojo.Product" >
+    update products
+    <set >
+      <if test="productNumber != null" >
+        product_number = #{productNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null" >
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryBig != null" >
+        category_big = #{categoryBig,jdbcType=VARCHAR},
+      </if>
+      <if test="categorySmall != null" >
+        category_small = #{categorySmall,jdbcType=VARCHAR},
+      </if>
+      <if test="direction != null" >
+        direction = #{direction,jdbcType=VARCHAR},
+      </if>
+      <if test="standard != null" >
+        standard = #{standard,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByProduct" parameterType="com.example.products.pojo.Product" >
+    update products
+    set product_number = #{productNumber,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      category_big = #{categoryBig,jdbcType=VARCHAR},
+      category_small = #{categorySmall,jdbcType=VARCHAR},
+      direction = #{direction,jdbcType=VARCHAR},
+      standard = #{standard,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByProductNoUrl" parameterType="com.example.products.pojo.Product" >
+    update products
+    set product_number = #{productNumber,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      category_big = #{categoryBig,jdbcType=VARCHAR},
+      category_small = #{categorySmall,jdbcType=VARCHAR},
+      direction = #{direction,jdbcType=VARCHAR},
+      standard = #{standard,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="queryCategoryKinds" resultType="java.lang.String">
+    select
+    distinct category
+    from products
+  </select>
+
+  <select id="queryCategoryBig" resultType="java.lang.String">
+    select
+    distinct category_big
+    from products
+  </select>
+
+  <select id="queryCategorySmall" resultType="java.lang.String">
+    select
+    distinct category_small
+    from products
+  </select>
+
+  <select id="queryCategoryNumber" resultType="java.lang.String" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from products p where p.category =#{category,jdbcType=VARCHAR}
+  </select>
+
+
+  <select id="queryCategoryBigKinds" parameterType="java.lang.String"  resultType="java.lang.String">
+    select
+    distinct category_big
+    from products p
+    where p.category =#{category,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryCategorySmallKinds" parameterType="java.lang.String" resultType="java.lang.String" >
+    select
+    distinct category_small
+    from products p
+    where p.category =#{category,jdbcType=VARCHAR} and p.category_big = #{categoryBig,jdbcType=VARCHAR}
+  </select>
+
+  <select id="queryProductNumber" parameterType="java.lang.String" resultType="java.lang.String" >
+    select
+    distinct product_number
+    from products p
+    where p.category =#{category,jdbcType=VARCHAR} and p.category_big = #{categoryBig,jdbcType=VARCHAR}
+    and p.category_small = #{categorySmall,jdbcType=VARCHAR}
+  </select>
+
+
+</mapper>

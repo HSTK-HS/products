@@ -1,0 +1,98 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="panelBar" th:fragment="pagination">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">德舜昌选型系统</div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"><a href="/query/index">主页查询</a></li>
+                <li class="layui-nav-item"><a onclick="toTable()">报表生成</a></li>
+                <li class="layui-nav-item"><a href="/query/change">信息管理</a></li>
+                <li class="layui-nav-item"><a >其它系统</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="/table">数据图表化</a>
+                        </dd>
+                    </dl>
+                </li>
+
+            </ul>
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <span th:text="${#httpServletRequest.getSession().getAttribute('loginUser')}"></span>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="/userInfo">用户资料</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="javascript:void(0);" onclick="logout()">注销</a></li>
+
+            </ul>
+        </div>
+    </div>
+    <script>
+
+        // ==================================================== 菜单栏公用部分 ================================
+        //注销功能
+        function logout() {
+            layer.confirm('确定注销？', function (index) {
+                $.ajax({
+                    type: "post",
+                    url: "/login/logout",
+                    contentType: "application/json",
+                    async: false,//异步or同步
+                    success: function (msg) {
+                        window.location.href = "/query/index";
+                    }
+                });
+            });
+
+        }
+
+        //跳转表单前进行检查
+        function toTable() {
+            if(cookie.get("scar")==='' || typeof(cookie.get("scar")) === "undefined"){
+                layer.msg("请先添加报表内容");
+            }else{
+                window.open('/query/shop','_blank');
+            }
+        }
+
+        //cookie操作工具类
+        var cookie = {
+            set: function (key, val, time) {//设置cookie方法
+                var date = new Date(); //获取当前时间
+                var expiresDays = time;  //将date设置为n天以后的时间
+                date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); //格式化为cookie识别的时间
+                document.cookie = key + "=" + val + ";expires=" + date.toGMTString()+";path=/";  //设置cookie
+            },
+            get: function (key) {//获取cookie方法
+                /*获取cookie参数*/
+                var getCookie = document.cookie.replace(/[ ]/g, "");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+                var arrCookie = getCookie.split(";")  //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+                var tips;  //声明变量tips
+                for (var i = 0; i < arrCookie.length; i++) {   //使用for循环查找cookie中的tips变量
+                    var arr = arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+                    if (key == arr[0]) {  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                        tips = arr[1];   //将cookie的值赋给变量tips
+                        break;   //终止for循环遍历
+                    }
+                }
+                return tips;
+            },
+            delete: function (key) { //删除cookie方法
+                var date = new Date(); //获取当前时间
+                date.setTime(date.getTime() - 10000); //将date设置为过去的时间
+                document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

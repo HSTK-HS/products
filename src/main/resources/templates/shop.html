@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:margin-top="http://www.w3.org/1999/xhtml">
+<head>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>报表生成</title>
+    <script src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <!--引入头部菜单栏-->
+    <div class="panelBar" th:replace="head :: pagination"></div>
+
+    <div class="layui-container">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>报表清单</legend>
+        </fieldset>
+
+        <div class="layui-col-md12 ">
+            <table class="layui-hide" id="shop" lay-filter="shop"></table>
+        </div>
+        <hr class="layui-bg-gray">
+        <div class="layui-row">
+            <button class="layui-btn layui-btn-danger layui-btn-radius" onclick="clearTable()">清空当前表单</button>
+            <button class="layui-btn layui-btn-radius" onclick="makeTable()">生成Excel表格</button>
+            <button class="layui-btn layui-btn-radius" onclick="makeWord()">生成Word报表</button>
+        </div>
+    </div>
+</div>
+<script id="barDemo" type="text/html">
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="delete">删除该项</a>
+</script>
+
+<script type="text/javascript">
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    var allData = null;
+
+    layui.use('table', function () {
+        var table = layui.table;
+
+        table.render({
+            elem: '#shop'
+            , url: '/query/ids'
+            , where: {ids: cookie.get("scar")}
+            , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            , cols: [
+                [
+                    {field: 'category', title: '大类', align: 'center', width: 100, sort: true},
+                    {field: 'categoryBig', title: '大类码', align: 'center', width: 100, sort: true},
+                    {field: 'categorySmall', title: '细分码', align: 'center', width: 100, sort: true},
+                    {field: 'productNumber', title: '产品编号', align: 'center', width: 100},
+                    {field: 'direction', title: '方向', align: 'center', width: 100},
+                    {field: 'productName', title: '产品名称', align: 'center', width: 150},
+                    {field: 'standard', title: '有无图纸标准', align: 'center', width: 120},
+                    {field: 'remarks', title: '说明', align: "center"},
+                    {field: 'number', title: '数量', align: "center", edit: 'text'},
+                    {fixed: 'right', title: '删除', width: 140, align: 'center', toolbar: '#barDemo'}
+                ]
+            ],
+            done: function (res, curr, count) {
+                //如果是异步请求数据方式，res即为你接口返回的信息。
+                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                allData = res;
+                console.log(res);
+
+                //得到当前页码
+                console.log(curr);
+
+                //得到数据总量
+                console.log(count);
+            }
+        });
+
+        table.on('tool(shop)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'delete') {
+                layer.confirm('确定删除该项？',{btn:['删除','退出']},
+                    function () {
+                    var a = cookie.get("scar").split(',');
+                    if (a[0].toString() === data.id.toString() && a.length !== 1) {
+                        cookie.set("scar", cookie.get("scar").replace(data.id + ",", ""), 24);
+                    } else if (a[0].toString() === data.id.toString() && a.length === 1) {
+                        cookie.set("scar", cookie.get("scar").replace(data.id, ""), 24);
+                        window.location.href = "/";
+                    } else {
+                        cookie.set("scar", cookie.get("scar").replace("," + data.id, ""), 24);
+                    }
+                    //删除指定cookie 后重载表格
+                    table.reload('shop', {
+                        where: {ids: cookie.get("scar")}
+                    });
+                    layer.closeAll();
+                });
+            }
+        });
+
+        table.on('edit(shop)', function (obj) {
+            var value = obj.value //得到修改后的值
+                , data = obj.data //得到所在行所有键值
+                , field = obj.field; //得到字段
+            //layer.alert('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+        });
+    });
+
+    //表单清空
+    function clearTable() {
+        layer.confirm('确定删除表单信息?', function () {
+            cookie.set("scar", "");
+            window.location.href = "/";
+        })
+    }
+
+    //发送数据到后端生成报表
+    function makeTable() {
+        window.location.href="/toExcel/get?ids="+cookie.get("scar");
+    }
+
+    //报表清单信息  post表单发送请求
+    function downloadFile(URL,data){
+        var form = $("<form>");
+        $('body').append(form);
+        form.attr('style','display:none');
+        form.attr('target','');
+        form.attr('method','post');
+        form.attr('action',URL);//下载文件的请求路径
+
+        var input1 = $('<input>');
+        input1.attr('type','hidden');
+        input1.attr('name','data');
+        input1.attr('value',data);
+        form.append(input1);
+        form.submit();
+
+    }
+    //报表生成
+    function makeWord() {
+        var data1 = JSON.stringify(allData.data);
+        downloadFile('/toWord/get',data1);
+        //window.location.href="/toWord/get?allData="+data1;
+    }
+
+    // ============================================ 菜单栏公用部分 ========================================
+    //注销功能
+    function logout() {
+        layer.confirm('确定注销？', function (index) {
+            $.ajax({
+                type: "post",
+                url: "/login/logout",
+                contentType: "application/json",
+                async: false,//异步or同步
+                success: function (msg) {
+                    window.location.href = "/query/index";
+                }
+            });
+        });
+
+    }
+
+    //cookie操作工具类
+    var cookie = {
+        set: function (key, val, time) {//设置cookie方法
+            var date = new Date(); //获取当前时间
+            var expiresDays = time;  //将date设置为n天以后的时间
+            date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); //格式化为cookie识别的时间
+            document.cookie = key + "=" + val + ";expires=" + date.toGMTString() + ";path=/";  //设置cookie
+        },
+        get: function (key) {//获取cookie方法
+            /*获取cookie参数*/
+            var getCookie = document.cookie.replace(/[ ]/g, "");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+            var arrCookie = getCookie.split(";")  //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+            var tips;  //声明变量tips
+            for (var i = 0; i < arrCookie.length; i++) {   //使用for循环查找cookie中的tips变量
+                var arr = arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+                if (key == arr[0]) {  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                    tips = arr[1];   //将cookie的值赋给变量tips
+                    break;   //终止for循环遍历
+                }
+            }
+            return tips;
+        },
+        delete: function (key) { //删除cookie方法
+            var date = new Date(); //获取当前时间
+            date.setTime(date.getTime() - 10000); //将date设置为过去的时间
+            document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
+        }
+    }
+
+
+</script>
+
+
+</body>
+</html>
