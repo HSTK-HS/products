@@ -474,7 +474,6 @@
         });
     });
 
-
     //添加选项后 判断查询的方式 进行上色
     function reloadAfter() {
         if ($('#demo_value').val() === "") {
@@ -495,6 +494,7 @@
         }
     }
 
+    
     // 根据cookie 中的值 进行加色
     function colorByCookie(res) {
         var choose = cookie.get("scar").split(',');
