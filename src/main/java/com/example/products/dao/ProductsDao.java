@@ -14,6 +14,8 @@ public interface ProductsDao {
 
     List<Product> selectAll();
 
+    Product selectByPrimaryKey(String id);
+
     List<Product> selectByProduct(Product product);
 
     List<Product> selectByPage(int curr,int page);

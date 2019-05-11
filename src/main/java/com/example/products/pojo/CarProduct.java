@@ -26,10 +26,12 @@ public class CarProduct {
 
     private String number;
 
+    private String price;
+
     public CarProduct() {
     }
 
-    public CarProduct(Integer id, String productNumber, String productName, String category, String categoryBig, String categorySmall, String direction, String standard, String remarks, String url, String number) {
+    public CarProduct(Integer id, String productNumber, String productName, String category, String categoryBig, String categorySmall, String direction, String standard, String remarks, String url, String number, String price) {
         this.id = id;
         this.productNumber = productNumber;
         this.productName = productName;
@@ -41,6 +43,7 @@ public class CarProduct {
         this.remarks = remarks;
         this.url = url;
         this.number = number;
+        this.price = price;
     }
 
     public Integer getId() {
@@ -87,6 +90,10 @@ public class CarProduct {
         return number;
     }
 
+    public String getPrice() {
+        return price;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -131,6 +138,10 @@ public class CarProduct {
         this.number = number;
     }
 
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
     @Override
     public String toString() {
         return "CarProduct{" +
@@ -145,6 +156,7 @@ public class CarProduct {
                 ", remarks='" + remarks + '\'' +
                 ", url='" + url + '\'' +
                 ", number='" + number + '\'' +
+                ", price='" + price + '\'' +
                 '}';
     }
 }

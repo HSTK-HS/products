@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:margin-top="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>项目详情</title>
+    <script src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="layui-col-md12">
+        <div style="margin-left:10px;margin-right: 10px">
+        <table class="layui-hide" id="shop" lay-filter="shop"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use('table', function () {
+        var table = layui.table;
+
+        table.render({
+            elem: '#shop'
+            , url: '/hist/projectDetail'
+            , where: {"projectId": parent.projectId}
+            , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            , cols: [
+                [
+                    {field: 'category', title: '大类', align: 'center', width: 100, sort: true},
+                    {field: 'categoryBig', title: '大类码', align: 'center', width: 100, sort: true},
+                    {field: 'categorySmall', title: '细分码', align: 'center', width: 100, sort: true},
+                    {field: 'productNumber', title: '产品编号', align: 'center', width: 100},
+                    {field: 'direction', title: '方向', align: 'center', width: 100},
+                    {field: 'productName', title: '产品名称', align: 'center', width: 150},
+                    {field: 'remarks', title: '说明', align: "center"},
+                    {field: 'number', title: '数量', align: "center"},
+                    {field: 'price', title: '产品单价', align: 'center', width: 120}
+                ]
+            ],
+            done: function (res, curr, count) {
+                //如果是异步请求数据方式，res即为你接口返回的信息。
+                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                allData = res;
+                console.log(res);
+
+                //得到当前页码
+                console.log(curr);
+
+                //得到数据总量
+                console.log(count);
+            }
+        });
+    });
+
+    //cookie操作工具类
+    var cookie = {
+        set: function (key, val, time) {//设置cookie方法
+            var date = new Date(); //获取当前时间
+            var expiresDays = time;  //将date设置为n天以后的时间
+            date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); //格式化为cookie识别的时间
+            document.cookie = key + "=" + val + ";expires=" + date.toGMTString() + ";path=/";  //设置cookie
+        },
+        get: function (key) {//获取cookie方法
+            /*获取cookie参数*/
+            var getCookie = document.cookie.replace(/[ ]/g, "");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+            var arrCookie = getCookie.split(";")  //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+            var tips;  //声明变量tips
+            for (var i = 0; i < arrCookie.length; i++) {   //使用for循环查找cookie中的tips变量
+                var arr = arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+                if (key == arr[0]) {  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                    tips = arr[1];   //将cookie的值赋给变量tips
+                    break;   //终止for循环遍历
+                }
+            }
+            return tips;
+        },
+        delete: function (key) { //删除cookie方法
+            var date = new Date(); //获取当前时间
+            date.setTime(date.getTime() - 10000); //将date设置为过去的时间
+            document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
+        }
+    };
+
+</script>
+</body>
+</html>

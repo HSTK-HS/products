@@ -27,6 +27,7 @@
     <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">添加</a>
 </script>
 <script th:inline="javascript">
+    var isNull = 0;//标志 该类是否存在细分码
     var option = [
         [
             {field: 'category', title: '大类', align: 'center', width: 100, sort: true},
@@ -58,7 +59,7 @@
                     , groups: 2 //只显示 1 个连续页码
                     , first: "首页" //显示首页
                     , last: "尾页" //显示尾页
-                } , done: function (res, curr, count) {
+                }, done: function (res, curr, count) {
                     // 表格加载接收后调用 给cookie中添加的信息 加上背景色
                     colorByCookie(res);
                 }
@@ -73,7 +74,7 @@
         table.render({
             elem: '#test'
             , url: "/query/sideCategory"
-            , where:{category:cate}
+            , where: {category: cate}
             , title: '数据表'
             , limit: 200
             , cols: option
@@ -87,6 +88,19 @@
             }, done: function (res, curr, count) {
                 // 表格加载接收后调用 给cookie中添加的信息 加上背景色
                 colorByCookie(res);
+                //查询是否存在细分码
+                $.ajax({
+                    url: '/query/queryCSBC',
+                    data: {"category": cate},
+                    type: "POST",
+                    dataType: "json",
+                    success: function (msg) {
+                        isNull = msg.length;
+                    },
+                    error: function (error) {
+                        layer.alert("查询失败！不存在该数据")
+                    }
+                });
             }
         });
 
@@ -105,49 +119,83 @@
                 })
 
             } else if (obj.event === 'add') {
-                if (typeof(cookie.get("scar")) === "undefined") {
-                    cookie.set("scar", data.id, 24);
+                if (typeof(cookie.get("projectName")) === "undefined" || cookie.get("projectName") === "") {
+                    layer.msg("请新建项目");
                 } else {
-                    var choose = cookie.get("scar").split(',');
-                    var flag = 0;
-                    for (var i = 0; i < choose.length; i++) {
-                        if (choose[i].toString() === data.id.toString()) {
-                            flag++;
-                        }
-                    }
-                    if (flag === 0 && cookie.get("scar") !== "") {
-                        cookie.set("scar", cookie.get("scar") + "," + data.id, 24);
-                        parent.layer.msg("已添加到报表");
-                        $.ajax({
-                            url: "/query/product2",
-                            data: {"category": a, "categoryBig": b, "categorySmall": c},
-                            type: "POST",
-                            dataType: "json",
-                            success: function (msg) {
-                                reload(msg);
-                            },
-                            error: function (error) {
-                                layer.alert("查询失败！不存在该数据")
-                            }
-                        });
-
-                    } else if (cookie.get("scar") === "") {
+                    if (typeof(cookie.get("scar")) === "undefined") {
                         cookie.set("scar", data.id, 24);
-                        parent.layer.msg("已添加到报表");
-                        $.ajax({
-                            url: "/query/product2",
-                            data: {"category": a, "categoryBig": b, "categorySmall": c},
-                            type: "POST",
-                            dataType: "json",
-                            success: function (msg) {
-                                reload(msg);
-                            },
-                            error: function (error) {
-                                layer.alert("查询失败！不存在该数据")
+                    } else {
+                        var choose = cookie.get("scar").split(',');
+                        var flag = 0;
+                        for (var i = 0; i < choose.length; i++) {
+                            if (choose[i].toString() === data.id.toString()) {
+                                flag++;
                             }
-                        });
-                    } else
-                        parent.layer.msg("请勿重复添加!");
+                        }
+                        if (flag === 0 && cookie.get("scar") !== "") {
+                            cookie.set("scar", cookie.get("scar") + "," + data.id, 24);
+                            parent.layer.msg("已添加到报表");
+
+                            if (isNull === 0) {
+                                $.ajax({
+                                    url: "/query/sideCategory2",
+                                    data: {"category": cate},
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (msg) {
+                                        reload(msg);
+                                    },
+                                    error: function (error) {
+                                        layer.alert("查询失败！不存在该数据")
+                                    }
+                                });
+                            } else {
+                                $.ajax({
+                                    url: "/query/product2",
+                                    data: {"category": a, "categoryBig": b, "categorySmall": c},
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (msg) {
+                                        reload(msg);
+                                    },
+                                    error: function (error) {
+                                        layer.alert("查询失败！不存在该数据")
+                                    }
+                                });
+                            }
+                        } else if (cookie.get("scar") === "") {
+                            cookie.set("scar", data.id, 24);
+                            parent.layer.msg("已添加到报表");
+                            if (isNull === 0) {
+                                $.ajax({
+                                    url: "/query/sideCategory2",
+                                    data: {"category": cate},
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (msg) {
+                                        reload(msg);
+                                    },
+                                    error: function (error) {
+                                        layer.alert("查询失败！不存在该数据")
+                                    }
+                                });
+                            } else {
+                                $.ajax({
+                                    url: "/query/product2",
+                                    data: {"category": a, "categoryBig": b, "categorySmall": c},
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (msg) {
+                                        reload(msg);
+                                    },
+                                    error: function (error) {
+                                        layer.alert("查询失败！不存在该数据")
+                                    }
+                                });
+                            }
+                        } else
+                            parent.layer.msg("请勿重复添加!");
+                    }
                 }
             }
         })
@@ -157,9 +205,9 @@
     // 根据cookie 中的值 进行加色
     function colorByCookie(res) {
         var choose = cookie.get("scar").split(',');
-        for(var i = 0;i<choose.length;i++){
-            for(var j = 0;j<res.data.length;j++){
-                if(choose[i].toString() === res.data[j].id.toString()){
+        for (var i = 0; i < choose.length; i++) {
+            for (var j = 0; j < res.data.length; j++) {
+                if (choose[i].toString() === res.data[j].id.toString()) {
                     Layui_SetDataTableRowColor('table', j, '#64fa8d');
                 }
             }
@@ -239,12 +287,12 @@
     };
 
 
-
     var a = cate, b = null, c = null;
     var categorySmallData = [];
-    var u = '/query/queryCSBC?category='+cate;
+
+    var u = '/query/queryCSBC?category=' + cate;
     $('#category').comboboxfilter({
-        url: u ,
+        url: u,
         scope: 'FilterQuery3',
         data: categorySmallData,
         unlimitText: '不限',

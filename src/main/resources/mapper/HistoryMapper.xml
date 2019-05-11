@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.products.dao.HistoryMapper">
+  <resultMap id="BaseResultMap" type="com.example.products.pojo.History">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="product_id" jdbcType="VARCHAR" property="productId" />
+    <result column="product_number" jdbcType="VARCHAR" property="productNumber" />
+    <result column="product_price" jdbcType="VARCHAR" property="productPrice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, project_id, product_id, product_number, product_price
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tablehistory
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tablehistory
+  </select>
+  <select id="selectByProject" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tablehistory
+    where project_id = #{projectId,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tablehistory
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByProjectId" parameterType="java.lang.String">
+    delete from tablehistory
+    where project_id = #{projectId,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.example.products.pojo.History">
+    insert into tablehistory (id, project_id, product_id, 
+      product_number, product_price)
+    values (#{id,jdbcType=INTEGER}, #{projectId,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR}, 
+      #{productNumber,jdbcType=VARCHAR}, #{productPrice,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.products.pojo.History">
+    insert into tablehistory
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="productNumber != null">
+        product_number,
+      </if>
+      <if test="productPrice != null">
+        product_price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null">
+        #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="productNumber != null">
+        #{productNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null">
+        #{productPrice,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.products.pojo.History">
+    update tablehistory
+    <set>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="productNumber != null">
+        product_number = #{productNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrice != null">
+        product_price = #{productPrice,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.products.pojo.History">
+    update tablehistory
+    set project_id = #{projectId,jdbcType=VARCHAR},
+      product_id = #{productId,jdbcType=VARCHAR},
+      product_number = #{productNumber,jdbcType=VARCHAR},
+      product_price = #{productPrice,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

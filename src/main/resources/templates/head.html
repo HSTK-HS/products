@@ -7,13 +7,14 @@
             <div class="layui-logo">德舜昌选型系统</div>
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul class="layui-nav layui-layout-left">
-                <li class="layui-nav-item"><a href="/query/index">主页查询</a></li>
+                <li class="layui-nav-item"><a href="/query/index">主页选型</a></li>
                 <li class="layui-nav-item"><a onclick="toTable()">报表生成</a></li>
                 <li class="layui-nav-item"><a href="/query/change">信息管理</a></li>
                 <li class="layui-nav-item"><a >其它系统</a>
                     <dl class="layui-nav-child">
                         <dd>
-                            <a href="/table">数据图表化</a>
+                            <a href="/table">数据图表</a>
+                            <a href="/hist/historyDetail">项目历史</a>
                         </dd>
                     </dl>
                 </li>
@@ -21,13 +22,15 @@
             </ul>
 
             <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item" id="currentProject">
+                </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <span th:text="${#httpServletRequest.getSession().getAttribute('loginUser')}"></span>
+                        <span id="author" th:text="${#httpServletRequest.getSession().getAttribute('loginUser')}"></span>
                     </a>
                     <dl class="layui-nav-child">
                         <dd>
-                            <a href="/userInfo">用户资料</a>
+                            <a href="/userInfo">用户管理</a>
                         </dd>
                     </dl>
                 </li>
@@ -37,6 +40,8 @@
         </div>
     </div>
     <script>
+        var author = document.getElementById('author').innerText;
+
 
         // ==================================================== 菜单栏公用部分 ================================
         //注销功能
@@ -55,12 +60,15 @@
 
         }
 
+
         //跳转表单前进行检查
         function toTable() {
+            cookie.set("author",author);
             if(cookie.get("scar")==='' || typeof(cookie.get("scar")) === "undefined"){
                 layer.msg("请先添加报表内容");
             }else{
-                window.open('/query/shop','_blank');
+               /* window.open('/query/shop','_blank');*/
+                window.location.href ="/query/shop";
             }
         }
 
@@ -91,7 +99,13 @@
                 date.setTime(date.getTime() - 10000); //将date设置为过去的时间
                 document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
             }
+        };
+
+        if(typeof(cookie.get("projectName")) === "undefined"){
+            cookie.set('projectName','');
         }
+
+        document.getElementById('currentProject').innerText = cookie.get('projectName');
     </script>
 </div>
 </body>

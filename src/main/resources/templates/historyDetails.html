@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:margin-top="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet"/>
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>项目历史</title>
+    <script src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="panelBar" th:replace="head :: pagination"></div>
+
+    <div class="layui-row layui-col-md10 layui-col-md-offset1" style="margin-top: 10px">
+        <fieldset class="layui-elem-field ">
+            <legend>项目历史</legend>
+            <div class="layui-field-box">
+                <table class="layui-hide" id="detail" lay-filter="detail"></table>
+            </div>
+        </fieldset>
+
+    </div>
+</div>
+<script id="barDemo" type="text/html">
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="projectDetail">项目详情</a>
+    <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="down">下载</a>
+    <!--<a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete">删除</a>-->
+</script>
+<script type="text/javascript">
+    var projectId =''; //为子页面提供projectId
+
+
+
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    layui.use('table', function () {
+        var table = layui.table;
+        //alert(author);
+
+        table.render({
+            elem: '#detail'
+            , url: '/hist/selectAll'
+            , limit: 20
+            , async: false
+            , even: true
+            , cols: [
+                [
+                    {
+                        field: 'createTime', title: '创建时间', width: 150, fixed: 'left', sort: true,
+                        templet: "<div>{{layui.util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm')}}</div>"
+                    }
+                    , {field: 'projectName', title: '项目名称'}
+                    , {field: 'customer', title: '客户名称'}
+                    , {field: 'author', title: '创建者', width: 120}
+                    , {field: 'authorPhone', title: '创建者号码',hide:true}
+                    , {field: 'totalPrice', title: '项目总价',sort: true}
+                    , {field: 'projectId', title: '项目编号',hide:true}
+                    , {fixed: 'right', title: '项目书',align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+            ,initSort:{
+                field:'createTime',type:'desc'
+            }
+        });
+
+        table.on('tool(detail)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            projectId = data.projectId;
+
+            if (layEvent === 'down') {
+                $.ajax({
+                    url: "/hist/projectDetail",
+                    data: {"projectId": projectId},
+                    type: "POST",
+                    dataType: "json",
+                    success: function (msg) {
+                        makeWord(data,msg.data);
+                    },
+                    error: function (error) {
+                        layer.alert("数据查询失败!");
+                    }
+                });
+            }else if(layEvent === 'projectDetail'){
+                layer.open({
+                    title: data.projectName+'项目详情' ,
+                    type: 2,
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['80%', '80%'], //宽高
+                    content: '/hist/projectDetails', //弹出的页面
+                    shadeClose: true, //点击遮罩关闭
+                    success: function (layero, index) {
+                        //var body = layer.getChildFrame('body', index);
+                    }
+                });
+            }/*else if(layEvent === 'delete'){
+
+                layer.confirm('是否删除该项目记录？', {btn: ['删除', '退出']},
+                    function (index) {
+                        $.ajax({
+                            url: "/hist/deleteByProjectId",
+                            data: {
+                                "projectId": projectId
+                            },
+                            type: "POST",
+                            dataType: "json",
+                            success: function (msg) {
+                                table.reload('detail');
+                                layer.close(index);
+                            },
+                            error: function (error) {
+                                layer.alert("删除失败!");
+                            }
+                        });
+                    }
+                );
+            }*/
+        });
+
+    });
+
+    //报表生成 (项目信息，具体产品信息)
+    function makeWord(data,allData) {
+        var dataAll = JSON.stringify(allData);
+        //传递客户 项目等信息
+        $.ajax({
+            url: "/toWord/detail",
+            data: {
+                "customer": data.customer,
+                "projectName": data.projectName,
+                "author": data.author,
+                "totalPrice": data.totalPrice
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (msg) {
+                downloadFile('/toWord/get', dataAll);
+            },
+            error: function (error) {
+                layer.alert("请重建项目!");
+            }
+        });
+    }
+
+    //报表清单信息  post表单发送请求
+    function downloadFile(URL, data) {
+        var form = $("<form>");
+        $('body').append(form);
+        form.attr('style', 'display:none');
+        form.attr('target', '');
+        form.attr('method', 'post');
+        form.attr('action', URL);//下载文件的请求路径
+
+        var input1 = $('<input>');
+        input1.attr('type', 'hidden');
+        input1.attr('name', 'data');
+        input1.attr('value', data);
+        form.append(input1);
+        form.submit();
+    }
+
+    // ============================================ 菜单栏公用部分 ========================================
+    //注销功能
+    function logout() {
+        layer.confirm('确定注销？', function (index) {
+            $.ajax({
+                type: "post",
+                url: "/login/logout",
+                contentType: "application/json",
+                async: false,//异步or同步
+                success: function (msg) {
+                    window.location.href = "/query/index";
+                }
+            });
+        });
+
+    }
+
+    //cookie操作工具类
+    var cookie = {
+        set: function (key, val, time) {//设置cookie方法
+            var date = new Date(); //获取当前时间
+            var expiresDays = time;  //将date设置为n天以后的时间
+            date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); //格式化为cookie识别的时间
+            document.cookie = key + "=" + val + ";expires=" + date.toGMTString() + ";path=/";  //设置cookie
+        },
+        get: function (key) {//获取cookie方法
+            /*获取cookie参数*/
+            var getCookie = document.cookie.replace(/[ ]/g, "");  //获取cookie，并且将获得的cookie格式化，去掉空格字符
+            var arrCookie = getCookie.split(";")  //将获得的cookie以"分号"为标识 将cookie保存到arrCookie的数组中
+            var tips;  //声明变量tips
+            for (var i = 0; i < arrCookie.length; i++) {   //使用for循环查找cookie中的tips变量
+                var arr = arrCookie[i].split("=");   //将单条cookie用"等号"为标识，将单条cookie保存为arr数组
+                if (key == arr[0]) {  //匹配变量名称，其中arr[0]是指的cookie名称，如果该条变量为tips则执行判断语句中的赋值操作
+                    tips = arr[1];   //将cookie的值赋给变量tips
+                    break;   //终止for循环遍历
+                }
+            }
+            return tips;
+        },
+        delete: function (key) { //删除cookie方法
+            var date = new Date(); //获取当前时间
+            date.setTime(date.getTime() - 10000); //将date设置为过去的时间
+            document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
+        }
+    };
+
+</script>
+</body>
+</html>

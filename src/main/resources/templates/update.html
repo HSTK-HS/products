@@ -15,7 +15,7 @@
 <div class="container">
 
     <div class="layui-col-md10 layui-col-md-offset1" style="margin-top: 15px">
-        <form action="" class="layui-form layui-form-pane">
+        <form action="" class="layui-form layui-form-pane  up" >
 
             <!-- 普通文本输入框 -->
             <div class="layui-row layui-col-space10">
@@ -53,7 +53,7 @@
             </div>
 
             <div class="layui-row layui-col-space10">
-                <div class="layui-col-md4">
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
                     <div class="layui-form-item">
                         <label class="layui-form-label">产品编号</label>
                         <div class="layui-input-block">
@@ -63,12 +63,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="layui-col-md4">
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">价格</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="price" placeholder="请输入产品价格"
+                                   autocomplete="off"
+                                   class="layui-input price">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
                     <div class="layui-form-item">
                         <label class="layui-form-label">方向</label>
                         <div class="layui-input-block">
-                            <select class="direction" name="direction" lay-verify="required">
-                                <option value="无">请选择一个方向</option>
+                            <select id="direction" class="direction" name="direction" lay-verify="required">
+                                <option value="">请选择一个方向</option>
                                 <option value="左">左</option>
                                 <option value="右">右</option>
                                 <option value="无">无</option>
@@ -76,14 +86,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="layui-col-md4">
-                    <div class="layui-form-item">
-                        <div class="layui-input-block">
-                            <input type="hidden" class="id" name="id">
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <div class="layui-row layui-col-space10">
@@ -107,14 +109,21 @@
                     </div>
                 </div>
                 <div class="layui-col-md4">
-                    <input type="hidden" class="url" name="url">
-                    <button type="button" class="layui-btn" id="up">
-                        <i class="layui-icon">&#xe67c;</i>上传详细文档
-                    </button>
-                    <button type="button" class="layui-btn" id="upgo">开始上传</button>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="hidden" class="id" name="id">
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <div class="layui-col-md8">
+                <input type="hidden" class="url" name="url">
+                <button type="button" class="layui-btn" id="up">
+                    <i class="layui-icon">&#xe67c;</i>上传详细文档
+                </button>
+                <button type="button" class="layui-btn" id="upgo">开始上传</button>
+            </div>
 
             <div class="layui-row layui-col-space20">
                 <div class="layui-form-item layui-form-text">
@@ -141,6 +150,22 @@
         var form = layui.form;
         var upload = layui.upload;
         var url = '未添加';
+        //子页面获取父页面数据  在子页面进行赋值
+        if(parent.puppy !== undefined || parent.puppy !== null){
+            $(".id").val(parent.puppy.id);
+            $(".category").val(parent.puppy.category);
+            $(".categoryBig").val(parent.puppy.categoryBig);
+            $(".categorySmall").val(parent.puppy.categorySmall);
+            $(".productNumber").val(parent.puppy.productNumber);
+            $(".price").val(parent.puppy.price);
+            $(".productName").val(parent.puppy.productName);
+            $(".remarks").val(parent.puppy.remarks);
+
+            $(".direction").val(parent.puppy.direction);//下拉框
+            $("input[name='standard'][value='"+parent.puppy.standard+"']").prop("checked",true);//单选按钮
+            form.render();
+        }
+
 
         //监听提交
         form.on('submit(formDemo)', function (data) {

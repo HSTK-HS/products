@@ -12,10 +12,11 @@
     <result column="standard" property="standard" jdbcType="VARCHAR" />
     <result column="remarks" property="remarks" jdbcType="VARCHAR" />
     <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, product_number, product_name, category, category_big, category_small, direction, 
-    standard, remarks, url
+    standard, remarks, url ,price
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -96,11 +97,11 @@
     insert into products ( product_number, product_name,
       category, category_big, category_small, 
       direction, standard, remarks, 
-      url)
+      url,price)
     values ( #{productNumber,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR},
       #{category,jdbcType=VARCHAR}, #{categoryBig,jdbcType=VARCHAR}, #{categorySmall,jdbcType=VARCHAR}, 
       #{direction,jdbcType=VARCHAR}, #{standard,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
-      #{url,jdbcType=VARCHAR})
+      #{url,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.example.products.pojo.Product" >
     insert into products
@@ -199,6 +200,9 @@
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
       </if>
+      <if test="price != null" >
+        url = #{price,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -212,7 +216,8 @@
       direction = #{direction,jdbcType=VARCHAR},
       standard = #{standard,jdbcType=VARCHAR},
       remarks = #{remarks,jdbcType=VARCHAR},
-      url = #{url,jdbcType=VARCHAR}
+      url = #{url,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByProductNoUrl" parameterType="com.example.products.pojo.Product" >
@@ -251,7 +256,6 @@
     <include refid="Base_Column_List" />
     from products p where p.category =#{category,jdbcType=VARCHAR}
   </select>
-
 
   <select id="queryCategoryBigKinds" parameterType="java.lang.String"  resultType="java.lang.String">
     select

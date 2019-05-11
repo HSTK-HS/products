@@ -28,6 +28,11 @@ public class UserInfoDaoImpl implements UserInfoDao {
     }
 
     @Override
+    public UserInfo selectByName(String name) {
+        return sqlSessionTemplate.selectOne("com.example.products.dao.UserInfoMapper.selectByName",name);
+    }
+
+    @Override
     public List<UserInfo> selectAll() {
         return sqlSessionTemplate.selectList("com.example.products.dao.UserInfoMapper.selectAll");
     }

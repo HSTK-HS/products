@@ -1,8 +1,6 @@
 package com.example.products.pojo;
 
 public class Product {
-    private Integer id;
-
     private String productNumber;
 
     private String productName;
@@ -20,6 +18,10 @@ public class Product {
     private String remarks;
 
     private String url;
+
+    private String price;
+    private Integer id;
+
 
     public Integer getId() {
         return id;
@@ -59,6 +61,10 @@ public class Product {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getPrice() {
+        return price;
     }
 
     public void setId(Integer id) {
@@ -101,6 +107,25 @@ public class Product {
         this.url = url;
     }
 
+    public void setPrice(String price){this.price = price;}
+
+    public Product() {
+    }
+
+    public Product(Integer id, String productNumber, String productName, String category, String categoryBig, String categorySmall, String direction, String standard, String remarks, String url, String price) {
+        this.id = id;
+        this.productNumber = productNumber;
+        this.productName = productName;
+        this.category = category;
+        this.categoryBig = categoryBig;
+        this.categorySmall = categorySmall;
+        this.direction = direction;
+        this.standard = standard;
+        this.remarks = remarks;
+        this.url = url;
+        this.price = price;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -114,6 +139,7 @@ public class Product {
                 ", standard='" + standard + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", url='" + url + '\'' +
+                ", price='" + price + '\'' +
                 '}';
     }
 }

@@ -41,9 +41,11 @@
        <!-- <table  tableName="products" domainObjectName="Product"  enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                 enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
-        <table  tableName="userinfo" domainObjectName="UserInfo"  enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+        <table  tableName="projectinfo" domainObjectName="ProjectInfo"  enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                 enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
+
+
 
 
     </context>

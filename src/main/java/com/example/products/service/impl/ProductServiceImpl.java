@@ -35,6 +35,11 @@ public class ProductServiceImpl implements ProductsService {
     }
 
     @Override
+    public Product selectByPrimaryKey(String id) {
+        return productsDao.selectByPrimaryKey(id);
+    }
+
+    @Override
     public List<Product> selectByProduct(Product product) {
         return productsDao.selectByProduct(product);
     }

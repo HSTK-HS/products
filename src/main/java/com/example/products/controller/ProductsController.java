@@ -1,5 +1,6 @@
 package com.example.products.controller;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.alibaba.fastjson.JSON;
 import com.example.products.dao.ProductsDao;
 import com.example.products.pojo.CarProduct;
@@ -81,7 +82,7 @@ public class ProductsController {
         for (String s : idList) {
             Product p = productsService.selectByPrimaryKey(Integer.parseInt(s));
             CarProduct cp = new CarProduct(p.getId(),p.getProductNumber(),p.getProductName(),p.getCategory(),p.getCategoryBig(),
-            p.getCategorySmall(),p.getDirection(),p.getStandard(),p.getRemarks(),p.getUrl(),"1");
+            p.getCategorySmall(),p.getDirection(),p.getStandard(),p.getRemarks(),p.getUrl(),"1",p.getPrice());
             result.add(cp);
         }
         return Layui.data(result, idList.length, "查询成功");
@@ -113,6 +114,17 @@ public class ProductsController {
         return Layui.data(list, list.size(), "查询成功");
     }
 
+    /**
+     *  与上一方法相同 返回形式不同  用于tab页 添加后重新渲染
+     * @param category
+     * @return
+     */
+    @RequestMapping("/sideCategory2")
+    @ResponseBody
+    public String selectByCategory2(@Param("category") String category){
+        List<Product> list = productsDao.queryByKey(category);
+        return JSON.toJSONString(list);
+    }
 
     /**
      * 多条件查询产品  只能用equals 不然会出错
@@ -206,6 +218,7 @@ public class ProductsController {
     @RequestMapping("/insert")
     @ResponseBody
     public String insert(@RequestBody Product product) {
+        System.out.println("1111");
         Integer flag = 0;
         flag = productsService.insert(product);
         Map<String, String> result = new HashMap<String, String>();
@@ -227,6 +240,9 @@ public class ProductsController {
     @ResponseBody
     public String updateByProduct(@RequestBody Product product) {
         Integer flag = 0;
+        if(product.getUrl().equals("未添加")){
+            product.setUrl(productsService.selectByPrimaryKey(product.getId()).getUrl());
+        }
         flag = productsService.updateByProduct(product);
         Map<String, String> result = new HashMap<String, String>();
         if (flag == 1) {
@@ -414,6 +430,11 @@ public class ProductsController {
         return "update";
     }
 
+    @RequestMapping("/tableInfo")
+    public String toTableInfo() {
+        return "tableInfo";
+    }
+
     @RequestMapping("/index")
     public String toIndex() {
         return "index";
@@ -429,4 +450,6 @@ public class ProductsController {
     public String shop() {
         return "shop";
     }
+
+
 }

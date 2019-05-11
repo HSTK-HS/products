@@ -15,18 +15,50 @@
     <div class="panelBar" th:replace="head :: pagination"></div>
 
     <div class="layui-container">
-        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <div class="layui-row layui-col-space12">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header" style="font-size: medium">项目名称</div>
+                    <div class="layui-card-body">
+                        <span id="pn"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header" style="font-size: medium">客户名称</div>
+                    <div class="layui-card-body">
+                        <span id="customer"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field layui-field-title">
             <legend>报表清单</legend>
         </fieldset>
-
         <div class="layui-col-md12 ">
             <table class="layui-hide" id="shop" lay-filter="shop"></table>
         </div>
+        <div class="layui-col-md12" style="height: 30px">
+            <div class="layui-col-md1 layui-col-md-offset9"
+                 style="font-size: medium;text-align:right;line-height:30px;">总价：
+            </div>
+            <div id="totalPrice" class="layui-col-md2"
+                 style="font-size: medium;text-align:center;line-height:30px;"></div>
+        </div>
         <hr class="layui-bg-gray">
         <div class="layui-row">
-            <button class="layui-btn layui-btn-danger layui-btn-radius" onclick="clearTable()">清空当前表单</button>
-            <button class="layui-btn layui-btn-radius" onclick="makeTable()">生成Excel表格</button>
-            <button class="layui-btn layui-btn-radius" onclick="makeWord()">生成Word报表</button>
+            <div class="layui-col-md1">
+                <button class="layui-btn layui-btn-danger layui-btn-radius" onclick="clearTable()">清空已选</button>
+            </div>
+            <div class="layui-col-md1" id="save">
+                <button class="layui-btn layui-btn-radius" onclick="saveTable()">保存项目</button>
+            </div>
+            <div class="layui-col-md1 layui-col-md-offset10" id="download">
+
+            </div>
+            <!--<button class="layui-btn layui-btn-radius" onclick="makeTable()">生成Excel表格</button>-->
         </div>
     </div>
 </div>
@@ -40,6 +72,7 @@
     });
 
     var allData = null;
+    var countPrice = 0;
 
     layui.use('table', function () {
         var table = layui.table;
@@ -52,14 +85,14 @@
             , cols: [
                 [
                     {field: 'category', title: '大类', align: 'center', width: 100, sort: true},
-                    {field: 'categoryBig', title: '大类码', align: 'center', width: 100, sort: true},
-                    {field: 'categorySmall', title: '细分码', align: 'center', width: 100, sort: true},
+                    {field: 'productName', title: '产品名称', align: 'center', width: 150},
+                    {field: 'categoryBig', title: '大类码', align: 'center', width: 100, sort: true, hide: true},
+                    {field: 'categorySmall', title: '细分码', align: 'center', width: 100, sort: true, hide: true},
                     {field: 'productNumber', title: '产品编号', align: 'center', width: 100},
                     {field: 'direction', title: '方向', align: 'center', width: 100},
-                    {field: 'productName', title: '产品名称', align: 'center', width: 150},
-                    {field: 'standard', title: '有无图纸标准', align: 'center', width: 120},
                     {field: 'remarks', title: '说明', align: "center"},
                     {field: 'number', title: '数量', align: "center", edit: 'text'},
+                    {field: 'price', title: '产品单价', align: 'center', width: 120, edit: 'text'},
                     {fixed: 'right', title: '删除', width: 140, align: 'center', toolbar: '#barDemo'}
                 ]
             ],
@@ -74,39 +107,57 @@
 
                 //得到数据总量
                 console.log(count);
+                totalPrice(table);
             }
         });
 
         table.on('tool(shop)', function (obj) {
             var data = obj.data;
             if (obj.event === 'delete') {
-                layer.confirm('确定删除该项？',{btn:['删除','退出']},
+                layer.confirm('确定删除该项？', {btn: ['删除', '退出']},
                     function () {
-                    var a = cookie.get("scar").split(',');
-                    if (a[0].toString() === data.id.toString() && a.length !== 1) {
-                        cookie.set("scar", cookie.get("scar").replace(data.id + ",", ""), 24);
-                    } else if (a[0].toString() === data.id.toString() && a.length === 1) {
-                        cookie.set("scar", cookie.get("scar").replace(data.id, ""), 24);
-                        window.location.href = "/";
-                    } else {
-                        cookie.set("scar", cookie.get("scar").replace("," + data.id, ""), 24);
+                        var a = cookie.get("scar").split(',');
+                        if (a[0].toString() === data.id.toString() && a.length !== 1) {
+                            cookie.set("scar", cookie.get("scar").replace(data.id + ",", ""), 24);
+                        } else if (a[0].toString() === data.id.toString() && a.length === 1) {
+                            cookie.set("scar", cookie.get("scar").replace(data.id, ""), 24);
+                            window.location.href = "/";
+                        } else {
+                            cookie.set("scar", cookie.get("scar").replace("," + data.id, ""), 24);
+                        }
+                        //删除指定cookie 后重载表格
+                        table.reload('shop', {
+                            where: {ids: cookie.get("scar")}
+                        });
+                        layer.closeAll();
+                        totalPrice(table);
                     }
-                    //删除指定cookie 后重载表格
-                    table.reload('shop', {
-                        where: {ids: cookie.get("scar")}
-                    });
-                    layer.closeAll();
-                });
+                );
             }
         });
 
-        table.on('edit(shop)', function (obj) {
-            var value = obj.value //得到修改后的值
-                , data = obj.data //得到所在行所有键值
-                , field = obj.field; //得到字段
-            //layer.alert('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+        //监听数量 和 价格 变化
+        table.on('edit(shop)', function (obj) { //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+            totalPrice(table);
         });
+
     });
+
+    //计算总价格
+    function totalPrice(table) {
+        countPrice = 0; //每次计算前重置
+        var p = table.cache.shop;//表中所有数据
+        for (var i = 0; i < p.length; i++) {
+            if (p[i].price === '' || p[i].price === null || p[i].price === "undefined") {
+                p[i].price = 0;
+            }
+            if (p[i].number === '' || p[i].number === null || p[i].number === "undefined") {
+                p[i].number = 0;
+            }
+            countPrice = (parseFloat(p[i].number) * parseFloat(p[i].price) + parseFloat(countPrice)).toFixed(2);
+        }
+        document.getElementById('totalPrice').innerText = countPrice.toString();
+    }
 
     //表单清空
     function clearTable() {
@@ -116,32 +167,80 @@
         })
     }
 
+    //保存表单  保存后 显示下载项
+    function saveTable() {
+        layer.confirm('保存后无法修改，确定保存当前项目?',
+            function () {
+                $.ajax({
+                    url: "/hist/add",
+                    data: {
+                        "customer": cookie.get("customer"),
+                        "projectName": cookie.get("projectName"),
+                        "author": cookie.get("author"),
+                        "totalPrice": countPrice,
+                        "body": JSON.stringify(allData.data)
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (msg) {
+                        layer.alert("保存成功!");
+                        document.getElementById("save").innerHTML = "";
+                        document.getElementById("download").innerHTML=
+                            "<button class=\"layui-btn layui-btn-radius\" onclick=\"makeWord()\">下载报表</button>";
+
+                    },
+                    error: function (error) {
+                        layer.alert("保存失败!")
+                    }
+                });
+            });
+    }
+
     //发送数据到后端生成报表
     function makeTable() {
-        window.location.href="/toExcel/get?ids="+cookie.get("scar");
+        window.location.href = "/toExcel/get?ids=" + cookie.get("scar");
     }
 
     //报表清单信息  post表单发送请求
-    function downloadFile(URL,data){
+    function downloadFile(URL, data) {
         var form = $("<form>");
         $('body').append(form);
-        form.attr('style','display:none');
-        form.attr('target','');
-        form.attr('method','post');
-        form.attr('action',URL);//下载文件的请求路径
+        form.attr('style', 'display:none');
+        form.attr('target', '');
+        form.attr('method', 'post');
+        form.attr('action', URL);//下载文件的请求路径
 
         var input1 = $('<input>');
-        input1.attr('type','hidden');
-        input1.attr('name','data');
-        input1.attr('value',data);
+        input1.attr('type', 'hidden');
+        input1.attr('name', 'data');
+        input1.attr('value', data);
         form.append(input1);
         form.submit();
-
     }
+
     //报表生成
     function makeWord() {
         var data1 = JSON.stringify(allData.data);
-        downloadFile('/toWord/get',data1);
+        //传递客户 项目等信息
+        $.ajax({
+            url: "/toWord/detail",
+            data: {
+                "customer": cookie.get("customer"),
+                "projectName": cookie.get("projectName"),
+                "author": cookie.get("author"),
+                "totalPrice": countPrice
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (msg) {
+                downloadFile('/toWord/get', data1);
+            },
+            error: function (error) {
+                layer.alert("请重建项目!");
+            }
+        });
+
+
         //window.location.href="/toWord/get?allData="+data1;
     }
 
@@ -189,9 +288,10 @@
             date.setTime(date.getTime() - 10000); //将date设置为过去的时间
             document.cookie = key + "=v; expires =" + date.toGMTString();//设置cookie
         }
-    }
+    };
 
-
+    document.getElementById('pn').innerText = cookie.get("projectName");
+    document.getElementById('customer').innerText = cookie.get("customer");
 </script>
 
 

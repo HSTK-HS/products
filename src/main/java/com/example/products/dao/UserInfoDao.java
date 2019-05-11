@@ -11,6 +11,8 @@ public interface UserInfoDao {
 
     UserInfo selectByInfo(UserInfo userInfo);
 
+    UserInfo selectByName(String name);
+
     List<UserInfo> selectAll();
 
     Integer insert(UserInfo userInfo);

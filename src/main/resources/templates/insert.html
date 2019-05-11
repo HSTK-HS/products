@@ -65,6 +65,16 @@
                 </div>
                 <div class="layui-col-md4">
                     <div class="layui-form-item">
+                        <label class="layui-form-label">价格</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="price" placeholder="请输入产品价格"
+                                   autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
                         <label class="layui-form-label">方向</label>
                         <div class="layui-input-block">
                             <select name="direction" lay-verify="required">
@@ -84,7 +94,7 @@
                         <label class="layui-form-label">产品名称</label>
                         <div class="layui-input-block">
                             <input type="text" name="productName" placeholder="请输入产品名称"
-                                   autocomplete="off" required lay-verify="required"
+                                   autocomplete="off"  lay-verify="numberOrEmpty"
                                    class="layui-input">
                         </div>
                     </div>
@@ -98,7 +108,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="layui-col-md4">
+                <div class="layui-col-md8">
                     <input type="hidden" class="url" name="url">
                     <button type="button" class="layui-btn" id="up">
                         <i class="layui-icon">&#xe67c;</i>上传详细文档

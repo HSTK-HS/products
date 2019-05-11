@@ -41,6 +41,13 @@ public class ProductsDaoImpl implements ProductsDao {
     }
 
     @Override
+    public Product selectByPrimaryKey(String id) {
+        Integer a = Integer.parseInt(id);
+        return sqlSessionTemplate.selectOne("com.example.products.dao.ProductMapper.selectByPrimaryKey", a);
+    }
+
+
+    @Override
     public List<Product> selectByPage(int curr, int page) {
         Map paramMap=new HashMap();
         int start = (curr-1)*page;
@@ -58,6 +65,7 @@ public class ProductsDaoImpl implements ProductsDao {
 
     @Override
     public int insert(Product product) {
+        System.out.println(product);
         return sqlSessionTemplate.insert("com.example.products.dao.ProductMapper.insert", product);
     }
 
