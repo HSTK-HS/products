@@ -58,6 +58,7 @@
             <div class="layui-col-md1 layui-col-md-offset10" id="download">
 
             </div>
+            <!--<button class="layui-btn layui-btn-radius" onclick="makeWord()">dwdwdwdw</button>-->
             <!--<button class="layui-btn layui-btn-radius" onclick="makeTable()">生成Excel表格</button>-->
         </div>
     </div>
@@ -138,7 +139,15 @@
 
         //监听数量 和 价格 变化
         table.on('edit(shop)', function (obj) { //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
-            totalPrice(table);
+
+            if(isNumber(obj.value) === true){
+                totalPrice(table);
+            }else{
+                layer.msg('请输入数字', {
+                    anim: 6
+                });
+            }
+
         });
 
     });
@@ -259,6 +268,17 @@
             });
         });
 
+    }
+
+    //验证是否为数字
+    function isNumber(val){
+        var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+        var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+        if(regPos.test(val) || regNeg.test(val)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     //cookie操作工具类

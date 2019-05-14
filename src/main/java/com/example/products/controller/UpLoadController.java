@@ -22,6 +22,7 @@ public class UpLoadController {
     @RequestMapping("/upload")
     @ResponseBody
     public Layui up(@RequestParam("file") MultipartFile file) throws IOException {
+        System.out.println(file.getName());
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHH");
         Map<String,String> result = new HashMap<String,String>();
         List list = new ArrayList();
@@ -31,6 +32,7 @@ public class UpLoadController {
             String ext = ext(myFileName);
             String data = df.format(new Date());
             String filePath =this.getClass().getResource("/").getPath()+"static/upload/"; //保存的路径
+            System.out.println(filePath);
             File fileDir=new File(filePath);
             if (!fileDir.exists()) { //如果不存在 则创建
                 fileDir.mkdirs();

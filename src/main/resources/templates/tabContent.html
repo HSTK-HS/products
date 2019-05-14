@@ -120,83 +120,84 @@
 
             } else if (obj.event === 'add') {
                 if (typeof(cookie.get("projectName")) === "undefined" || cookie.get("projectName") === "") {
-                    layer.msg("请新建项目");
-                } else {
-                    if (typeof(cookie.get("scar")) === "undefined") {
-                        cookie.set("scar", data.id, 24);
-                    } else {
-                        var choose = cookie.get("scar").split(',');
-                        var flag = 0;
-                        for (var i = 0; i < choose.length; i++) {
-                            if (choose[i].toString() === data.id.toString()) {
-                                flag++;
-                            }
-                        }
-                        if (flag === 0 && cookie.get("scar") !== "") {
-                            cookie.set("scar", cookie.get("scar") + "," + data.id, 24);
-                            parent.layer.msg("已添加到报表");
-
-                            if (isNull === 0) {
-                                $.ajax({
-                                    url: "/query/sideCategory2",
-                                    data: {"category": cate},
-                                    type: "POST",
-                                    dataType: "json",
-                                    success: function (msg) {
-                                        reload(msg);
-                                    },
-                                    error: function (error) {
-                                        layer.alert("查询失败！不存在该数据")
-                                    }
-                                });
-                            } else {
-                                $.ajax({
-                                    url: "/query/product2",
-                                    data: {"category": a, "categoryBig": b, "categorySmall": c},
-                                    type: "POST",
-                                    dataType: "json",
-                                    success: function (msg) {
-                                        reload(msg);
-                                    },
-                                    error: function (error) {
-                                        layer.alert("查询失败！不存在该数据")
-                                    }
-                                });
-                            }
-                        } else if (cookie.get("scar") === "") {
-                            cookie.set("scar", data.id, 24);
-                            parent.layer.msg("已添加到报表");
-                            if (isNull === 0) {
-                                $.ajax({
-                                    url: "/query/sideCategory2",
-                                    data: {"category": cate},
-                                    type: "POST",
-                                    dataType: "json",
-                                    success: function (msg) {
-                                        reload(msg);
-                                    },
-                                    error: function (error) {
-                                        layer.alert("查询失败！不存在该数据")
-                                    }
-                                });
-                            } else {
-                                $.ajax({
-                                    url: "/query/product2",
-                                    data: {"category": a, "categoryBig": b, "categorySmall": c},
-                                    type: "POST",
-                                    dataType: "json",
-                                    success: function (msg) {
-                                        reload(msg);
-                                    },
-                                    error: function (error) {
-                                        layer.alert("查询失败！不存在该数据")
-                                    }
-                                });
-                            }
-                        } else
-                            parent.layer.msg("请勿重复添加!");
-                    }
+                    parent.layer.msg("请新建项目");
+                    return;
                 }
+                if (typeof(cookie.get("scar")) === "undefined") {
+                    cookie.set("scar", data.id, 24);
+                } else {
+                    var choose = cookie.get("scar").split(',');
+                    var flag = 0;
+                    for (var i = 0; i < choose.length; i++) {
+                        if (choose[i].toString() === data.id.toString()) {
+                            flag++;
+                        }
+                    }
+                    if (flag === 0 && cookie.get("scar") !== "") {
+                        cookie.set("scar", cookie.get("scar") + "," + data.id, 24);
+                        parent.layer.msg("已添加到报表");
+
+                        if (isNull === 0) {
+                            $.ajax({
+                                url: "/query/sideCategory2",
+                                data: {"category": cate},
+                                type: "POST",
+                                dataType: "json",
+                                success: function (msg) {
+                                    reload(msg);
+                                },
+                                error: function (error) {
+                                    layer.alert("查询失败！不存在该数据")
+                                }
+                            });
+                        } else {
+                            $.ajax({
+                                url: "/query/product2",
+                                data: {"category": a, "categoryBig": b, "categorySmall": c},
+                                type: "POST",
+                                dataType: "json",
+                                success: function (msg) {
+                                    reload(msg);
+                                },
+                                error: function (error) {
+                                    layer.alert("查询失败！不存在该数据")
+                                }
+                            });
+                        }
+                    } else if (cookie.get("scar") === "") {
+                        cookie.set("scar", data.id, 24);
+                        parent.layer.msg("已添加到报表");
+                        if (isNull === 0) {
+                            $.ajax({
+                                url: "/query/sideCategory2",
+                                data: {"category": cate},
+                                type: "POST",
+                                dataType: "json",
+                                success: function (msg) {
+                                    reload(msg);
+                                },
+                                error: function (error) {
+                                    layer.alert("查询失败！不存在该数据")
+                                }
+                            });
+                        } else {
+                            $.ajax({
+                                url: "/query/product2",
+                                data: {"category": a, "categoryBig": b, "categorySmall": c},
+                                type: "POST",
+                                dataType: "json",
+                                success: function (msg) {
+                                    reload(msg);
+                                },
+                                error: function (error) {
+                                    layer.alert("查询失败！不存在该数据")
+                                }
+                            });
+                        }
+                    } else
+                        parent.layer.msg("请勿重复添加!");
+                }
+
             }
         })
     });

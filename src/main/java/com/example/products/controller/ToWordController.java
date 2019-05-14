@@ -245,6 +245,40 @@ public class ToWordController {
             totalPrice =  totalPrice + eachPrice;
         }
 
+        /*XWPFTable priceTable = document.createTable();
+
+        //列宽自动分割
+        CTTblWidth priceWidth = priceTable.getCTTbl().addNewTblPr().addNewTblW();
+        priceWidth.setType(STTblWidth.DXA);
+        priceWidth.setW(BigInteger.valueOf(9072));
+
+        //表格第一行
+        XWPFTableRow priceTableRowOne = priceTable.getRow(0);
+        priceTableRowOne.getCell(0).setText("项目总价");
+        priceTableRowOne.addNewTableCell().setText(decimalFormat.format(totalPrice));*/
+
+        /*XWPFTable table1 = document.createTable(8, 10);
+        table1.setWidth(10);
+        // 获取到刚刚插入的行
+        XWPFTableRow row1 = table1.getRow(0);
+        // 设置单元格内容
+        row1.getCell(0).setText("字段名");
+        row1.getCell(1).setText("字段说明");
+        row1.getCell(2).setText("数据类型");
+        row1.getCell(3).setText("长度");
+        row1.getCell(4).setText("索引");
+        row1.getCell(5).setText("是否为空");
+        row1.getCell(6).setText("主键");
+        row1.getCell(7).setText("外键");
+        row1.getCell(8).setText("缺省值");
+        row1.getCell(9).setText("备注");
+
+        table1.getRow(2).getCell(2).setText("AAA");
+        mergeCellsHorizontal(table1,2,2,5);
+        mergeCellsVertically(table1,4,4,6);
+        table1.getRow(4).getCell(4).setText("SSSS");
+        table1.getRow(7).getCell(4).setText("SSSS");*/
+
         XWPFParagraph price = document.createParagraph();
         XWPFRun pr = price.createRun();
         pr.setFontSize(11);
@@ -401,6 +435,34 @@ public class ToWordController {
 
         return paraTexts;
     }
+
+    // word跨列合并单元格
+    public  void mergeCellsHorizontal(XWPFTable table,int row,int fromCell,int toCell) {
+        for (int cellIndex = fromCell; cellIndex <= toCell; cellIndex++) {
+            XWPFTableCell cell = table.getRow(row).getCell(cellIndex);
+            if ( cellIndex == fromCell ) {
+                // The first merged cell is set with RESTART merge value
+                cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
+            } else {
+                // Cells which join (merge) the first one, are set with CONTINUE
+                cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+            }
+        }
+    }
+    // word跨行并单元格
+    public void mergeCellsVertically(XWPFTable table, int col, int fromRow, int toRow) {
+        for (int rowIndex = fromRow; rowIndex <= toRow; rowIndex++) {
+            XWPFTableCell cell = table.getRow(rowIndex).getCell(col);
+            if ( rowIndex == fromRow ) {
+                // The first merged cell is set with RESTART merge value
+                cell.getCTTc().addNewTcPr().addNewVMerge().setVal(STMerge.RESTART);
+            } else {
+                // Cells which join (merge) the first one, are set with CONTINUE
+                cell.getCTTc().addNewTcPr().addNewVMerge().setVal(STMerge.CONTINUE);
+            }
+        }
+    }
+
 
     // 自设置样式 --失败
     /*private static void addCustomHeadingStyle(XWPFDocument docxDocument, String strStyleId, int headingLevel) {
